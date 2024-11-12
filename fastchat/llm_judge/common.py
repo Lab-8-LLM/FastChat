@@ -405,6 +405,7 @@ def play_a_match_pair(match: MatchPair, output_file: str):
 
 
 def chat_completion_openai(model, conv, temperature, max_tokens, api_dict=None):
+    
     if api_dict is not None:
         openai.api_base = api_dict["api_base"]
         openai.api_key = api_dict["api_key"]
@@ -413,7 +414,8 @@ def chat_completion_openai(model, conv, temperature, max_tokens, api_dict=None):
         try:
             messages = conv.to_openai_api_messages()
             response = openai.ChatCompletion.create(
-                model=model,
+                engine=os.environ.get("OPENAI_ENGINE",None), # engine = "deployment_name".
+                model=model if os.environ.get("OPENAI_ENGINE",None) == None else None ,
                 messages=messages,
                 n=1,
                 temperature=temperature,
