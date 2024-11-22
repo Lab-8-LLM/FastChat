@@ -5,6 +5,27 @@ In this package, you can use MT-bench questions and prompts to evaluate your mod
 MT-bench is a set of challenging multi-turn open-ended questions for evaluating chat assistants.
 To automate the evaluation process, we prompt strong LLMs like GPT-4 to act as judges and assess the quality of the models' responses.
 
+## 注意事項
+這是一個 Fork 分支，我們進行了一些較為**暴力**的改動，使該框架的 MT-Bench 能夠被整合在我們的環境中，關於 Fast-Chat 的其他功能可能會無法使用。
+
+具體變動如下:
+- 使用 Azure OpenAI Client (無提供 OpenAI Client選項)
+- 升級至 OpenAI Package 1.0+
+- 升級至 Pydantic v2
+
+### Azure OpenAI Client
+請於環境變數中注入以下變數：
+```
+FAST_CHAT_AZ_OPENAI_API_KEY=
+FAST_CHAT_AZ_OPENAI_API_ENDPOINT=
+FAST_CHAT_AZ_OPENAI_API_VERSION=
+FAST_CHAT_AZ_OPENAI_MODEL=
+```
+
+### 已知問題
+1. 由於 Pydatic 版本相依問題， `llm_judge/gen_model_answer.py` 無法使用 GPU>1。
+
+
 ## Contents
 - [Install](#install)
 - [Review Pre-Generated Model Answers and Judgments](#review-pre-generated-model-answers-and-judgments)

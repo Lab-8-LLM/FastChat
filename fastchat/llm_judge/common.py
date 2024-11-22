@@ -406,25 +406,48 @@ def play_a_match_pair(match: MatchPair, output_file: str):
 
 def chat_completion_openai(model, conv, temperature, max_tokens, api_dict=None):
     
-    if api_dict is not None:
-        openai.api_base = api_dict["api_base"]
-        openai.api_key = api_dict["api_key"]
-    output = API_ERROR_OUTPUT
+    # if api_dict is not None:
+    #     openai.api_base = api_dict["api_base"]
+    #     openai.api_key = api_dict["api_key"]
+    # output = API_ERROR_OUTPUT
+    # for _ in range(API_MAX_RETRY):
+    #     try:
+    #         messages = conv.to_openai_api_messages()
+    #         response = openai.ChatCompletion.create(
+    #             engine=os.environ.get("OPENAI_ENGINE",None), # engine = "deployment_name".
+    #             model=model if os.environ.get("OPENAI_ENGINE",None) == None else None ,
+    #             messages=messages,
+    #             n=1,
+    #             temperature=temperature,
+    #             max_tokens=max_tokens,
+    #         )
+    #         output = response["choices"][0]["message"]["content"]
+    #         break
+    #     except openai.error.OpenAIError as e:
+    #         print(type(e), e)
+    #         time.sleep(API_RETRY_SLEEP)
+    
     for _ in range(API_MAX_RETRY):
         try:
             messages = conv.to_openai_api_messages()
-            response = openai.ChatCompletion.create(
-                engine=os.environ.get("OPENAI_ENGINE",None), # engine = "deployment_name".
-                model=model if os.environ.get("OPENAI_ENGINE",None) == None else None ,
-                messages=messages,
-                n=1,
+
+            client = openai.AzureOpenAI(
+                api_key=os.environ["FAST_CHAT_AZ_OPENAI_API_KEY"],
+                azure_endpoint=os.environ["FAST_CHAT_AZ_OPENAI_API_ENDPOINT"],
+                api_version=os.environ["FAST_CHAT_AZ_OPENAI_API_VERSION"]
+            )
+
+            completion = client.chat.completions.create(
+                model=os.environ["FAST_CHAT_AZ_OPENAI_MODEL"],
+                messages = messages,
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
-            output = response["choices"][0]["message"]["content"]
+
+            output = completion.choices[0].message.content
             break
-        except openai.error.OpenAIError as e:
-            print(type(e), e)
+        except Exception as e:
+            print(type(e), e) 
             time.sleep(API_RETRY_SLEEP)
 
     return output
