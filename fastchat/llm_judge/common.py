@@ -163,7 +163,8 @@ def run_judge_single(question, answer, judge, ref_answer, multi_turn=False):
     conv.append_message(conv.roles[0], user_prompt)
     conv.append_message(conv.roles[1], None)
 
-    if model in OPENAI_MODEL_LIST:
+    if True:
+    # if model in OPENAI_MODEL_LIST:
         judgment = chat_completion_openai(model, conv, temperature=0, max_tokens=2048)
     elif model in ANTHROPIC_MODEL_LIST:
         judgment = chat_completion_anthropic(
@@ -226,8 +227,8 @@ def play_a_match_single(match: MatchSingle, output_file: str):
 
     if output_file:
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
-        with open(output_file, "a") as fout:
-            fout.write(json.dumps(result) + "\n")
+        with open(output_file, "a", encoding='utf-8') as fout:
+            fout.write(json.dumps(result,ensure_ascii=False) + "\n")
 
     return result
 
