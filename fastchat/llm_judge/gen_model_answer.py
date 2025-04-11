@@ -95,6 +95,8 @@ def get_model_answers(
         debug=False,
     )
 
+    model.bfloat16()
+
     for question in tqdm(questions):
         if question["category"] in temperature_config:
             temperature = temperature_config[question["category"]]
